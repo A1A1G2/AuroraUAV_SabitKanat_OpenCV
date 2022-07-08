@@ -12,6 +12,8 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 _, frame = cap.read()
 (h, w) = frame.shape[:2]
+kernel = np.ones((5,5),np.uint8)
+
 while(1):
     _, frame = cap.read()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -28,9 +30,9 @@ while(1):
     
     #ikisini mask ta birleştiriyoruz
     mask = mask0 + mask1;
-    
+    mask2 = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     #ortalamasını alıyoruz
-    M = cv2.moments(mask)
+    M = cv2.moments(mask2)
     if M["m00"] != 0:
         x = int(M["m10"] / M["m00"])
         y = int(M["m01"] / M["m00"])
@@ -47,9 +49,10 @@ while(1):
  
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
+    cv2.imshow('mask2', mask2)
     cv2.imshow('result', result)
      
-    if cv2.waitKey(30) == ord('q'):
+    if cv2.waitKey(300) == ord('q'):
         break 
  
 cv2.destroyAllWindows()
